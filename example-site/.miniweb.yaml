@@ -1,0 +1,18 @@
+# site settings for MiniWeb
+
+index:
+- index.html
+- index.md
+- index.txt
+
+autoindex: true
+
+markdown:
+  script:
+  - /script.js
+  style:
+  - /style.css
+  style_code: |
+    html {
+      background-color: lightgray;
+    }
