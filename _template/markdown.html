@@ -1,11 +1,19 @@
 <!DOCTYPE html>
-
+{{ range .Config.Script }}
+<script src="{{ . }}"></script>{{ end }}
+{{- range .Config.Style }}
+<link rel=stylesheet href="{{ . }}">{{ end }}
 <style>
 body {
     max-width: 1280px;
     margin: 0 auto;
     padding: 4px 8px;
-}
+}{{ if .Config.StyleCode }}
+{{ .Config.StyleCode }}{{ end }}
 </style>
 
-{{ .Body }}
+{{ .Body }}{{ if .Config.ScriptCode }}
+<script>
+{{ .Config.ScriptCode }}
+</script>
+{{ end -}}

@@ -12,7 +12,9 @@ markdown:
   - /script.js
   style:
   - /style.css
-  style_code: |
-    html {
-      background-color: lightgray;
+  style_code: |-
+    body {
+      //max-width: 480px;
     }
+  script_code: |-
+    greeting("world");

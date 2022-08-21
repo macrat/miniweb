@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+
+<style>
+body {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 4px 8px;
+}
+</style>
+
+<h1>Directory {{ .Path }}</h1>
+<ul>
+    {{- if ne .Path "/" }}
+    <li><a href="../">../</a></li>
+    {{ end }}
+    {{- range .Files }}
+    {{ if .IsDir }}
+    <li><a href="./{{ .Name }}/">{{ .Name }}/</a></li>
+    {{- else }}
+    <li><a href="./{{ .Name }}">{{ .Name }}</a></li>
+    {{- end }}{{ end }}
+</ul>

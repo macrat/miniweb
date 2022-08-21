@@ -20,9 +20,16 @@ var (
 	markdownTemplate = template.Must(template.ParseFS(templateFiles, "_template/markdown.html"))
 )
 
+type MarkdownConfig struct {
+	Script     []string     `yaml:"script"`
+	ScriptCode template.JS  `yaml:"script_code"`
+	Style      []string     `yaml:"style"`
+	StyleCode  template.CSS `yaml:"style_code"`
+}
+
 type MarkdownType struct{}
 
-func (mt MarkdownType) Serve(c *Context, f fs.File) error {
+func (mt MarkdownType) Serve(c *Context, f fs.File, i fs.FileInfo) error {
 	c.ContentType("text/html")
 
 	gfm := goldmark.New(
@@ -48,15 +55,24 @@ func (mt MarkdownType) Serve(c *Context, f fs.File) error {
 	}
 
 	var buf bytes.Buffer
-	if err := gfm.Convert(raw, &buf); err != nil {
+	if err = gfm.Convert(raw, &buf); err != nil {
 		return err
 	}
 
 	data := struct {
-		Body template.HTML
+		Body   template.HTML
+		Config MarkdownConfig
 	}{
-		Body: template.HTML(buf.String()),
+		Body:   template.HTML(buf.String()),
+		Config: c.Config.Markdown,
 	}
 
-	return markdownTemplate.Execute(c, data)
+	buf.Reset()
+	if err = markdownTemplate.Execute(&buf, data); err != nil {
+		return err
+	}
+
+	c.ServeContent(i.Name(), i.ModTime(), int64(buf.Len()), &buf)
+
+	return nil
 }

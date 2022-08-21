@@ -23,4 +23,5 @@ console.log('x + y = ', x + y);
 
 ---
 
-- [sub directory](/dir)
+- [sub directory](dir/)
+- [listing test](listing/)

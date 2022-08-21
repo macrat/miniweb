@@ -1,8 +1,11 @@
 package main
 
 import (
+	"errors"
+	"io"
 	"io/fs"
 	"net/http"
+	"time"
 )
 
 type Context struct {
@@ -41,6 +44,14 @@ func (c *Context) WriteHeader(statusCode int) {
 	c.resp.WriteHeader(statusCode)
 }
 
+func (c *Context) ServeContent(name string, modtime time.Time, size int64, content io.Reader) {
+	http.ServeContent(c, c.Request, name, modtime, dummySeeker{content, size})
+}
+
+func (c *Context) Redirect(path string) {
+	http.Redirect(c, c.Request, path, http.StatusMovedPermanently)
+}
+
 func (c *Context) ContentType(mimeType string) {
 	if mimeType != "" {
 		c.Header().Set("Content-Type", mimeType)
@@ -49,4 +60,23 @@ func (c *Context) ContentType(mimeType string) {
 
 func (c *Context) Open(name string) (fs.File, error) {
 	return c.dir.Open(name)
+}
+
+type dummySeeker struct {
+	Reader io.Reader
+	Size   int64
+}
+
+func (d dummySeeker) Read(p []byte) (int, error) {
+	return d.Reader.Read(p)
+}
+
+func (d dummySeeker) Seek(offset int64, whence int) (int64, error) {
+	if whence == io.SeekStart && offset == 0 {
+		return 0, nil
+	} else if whence == io.SeekEnd && offset == 0 {
+		return d.Size, nil
+	} else {
+		return 0, errors.New("not supported operation")
+	}
 }

@@ -21,12 +21,13 @@ $ cat <<EOS >page.html
 <!DOCTYPE html>
 
 You can use <b>HTML</b> too.
+EOS
 ```
 
 2. Start miniweb.
 
 ``` shell
-$ miniweb
+$ miniweb /path/to/root-directory
 ```
 
 Now you can see your website on <localhost:8000>.
