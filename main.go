@@ -55,9 +55,14 @@ func NewConfigReader() *ConfigReader {
 
 func (cr *ConfigReader) Read(dir fs.FS, logger zerolog.Logger) Config {
 	f, err := dir.Open(".miniweb.yaml")
-	if err != nil && !errors.Is(err, fs.ErrNotExist) {
-		logger.Warn().Err(err).Msg("failed to open config")
-		return cr.cache
+	if err != nil {
+		if !errors.Is(err, fs.ErrNotExist) {
+			logger.Warn().Err(err).Msg("failed to open config")
+			return cr.cache
+		}
+		c := Config{}
+		c.SetDefault()
+		return c
 	}
 
 	info, err := f.Stat()
